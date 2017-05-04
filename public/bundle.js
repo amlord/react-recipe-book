@@ -25496,21 +25496,46 @@
 	    getInitialState: function getInitialState() {
 	        return {
 	            recipes: [{
-	                id: 1,
+	                id: 0,
 	                name: 'Spaghetti Bolognese',
 	                ingredients: ['mince meat', 'pasta', 'tomato sauce']
 	            }, {
-	                id: 2,
+	                id: 1,
 	                name: 'Toad in the Hole',
 	                ingredients: ['Sausages', 'Milk', 'Flour', 'Egg', 'Oil']
 	            }]
 	        };
 	    },
+	    handleRecipeAdd: function handleRecipeAdd(recipe) {
+	        var recipes = this.state.recipes;
+	
+	        // add an id to the added recipe
+	
+	        recipe.id = recipes.length;
+	
+	        // add recipe to the recipes array
+	        recipes.push(recipe);
+	
+	        // update the state
+	        this.setState({
+	            recipes: recipes
+	        });
+	    },
 	    render: function render() {
+	        var _this = this;
+	
 	        var recipes = this.state.recipes;
 	
 	
 	        var children = React.Children.map(this.props.children, function (child) {
+	
+	            // check if we're on the recipe 'add' compoent
+	            if (child.props.route.path !== undefined && child.props.route.path === 'add') {
+	                return React.cloneElement(child, {
+	                    handleRecipeAdd: _this.handleRecipeAdd
+	                });
+	            }
+	
 	            return React.cloneElement(child, {
 	                recipes: recipes
 	            });
@@ -25584,22 +25609,101 @@
 /* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	var React = __webpack_require__(8);
 	
+	var _require = __webpack_require__(166),
+	    hashHistory = _require.hashHistory;
+	
 	// Add Recipe
-	var RecipeAdd = function RecipeAdd(props) {
-	  return React.createElement(
-	    "div",
-	    { className: "recipeBook__add" },
-	    React.createElement(
-	      "h2",
-	      null,
-	      "Recipe Add"
-	    )
-	  );
-	};
+	
+	
+	var RecipeAdd = React.createClass({
+	  displayName: 'RecipeAdd',
+	
+	  getInitialState: function getInitialState() {
+	    return {
+	      name: '',
+	      ingredients: []
+	    };
+	  },
+	  onNameChange: function onNameChange(e) {
+	    this.setState({
+	      name: e.target.value
+	    });
+	  },
+	  onIngredientsChange: function onIngredientsChange(e) {
+	    // split comma-separated string into array
+	    var ingredients = e.target.value.split(',');
+	
+	    // remove leading spaces from array elements
+	    ingredients = ingredients.map(function (ingredient) {
+	      return ingredient.trimLeft();
+	    });
+	
+	    // update the state
+	    this.setState({
+	      ingredients: ingredients
+	    });
+	  },
+	  onSubmit: function onSubmit(e) {
+	    e.preventDefault();
+	
+	    // check we have a recipe to save
+	    if (this.state.name !== '' && this.state.ingredients.length > 0) {
+	      // call the parent's 'recipe add' handler
+	      this.props.handleRecipeAdd(this.state);
+	
+	      // empty the state
+	      this.setState({
+	        name: '',
+	        ingredients: []
+	      }, function () {
+	        // route to the recipe list tab
+	        hashHistory.push('/');
+	      });
+	    }
+	  },
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { className: 'recipeBook__add' },
+	      React.createElement(
+	        'h2',
+	        null,
+	        'Recipe Add'
+	      ),
+	      React.createElement(
+	        'form',
+	        { onSubmit: this.onSubmit },
+	        React.createElement(
+	          'label',
+	          { htmlFor: 'recipeName' },
+	          'Recipe Name:'
+	        ),
+	        React.createElement('input', { id: 'recipeName', value: this.state.name, onChange: this.onNameChange }),
+	        React.createElement(
+	          'label',
+	          { htmlFor: 'recipeIngredients' },
+	          'Recipe Ingredients ',
+	          React.createElement(
+	            'small',
+	            null,
+	            '(comma separated)'
+	          ),
+	          ':'
+	        ),
+	        React.createElement('textarea', { id: 'recipeIngredients', value: this.state.ingredients.join(', '), onChange: this.onIngredientsChange }),
+	        React.createElement(
+	          'button',
+	          { className: 'btn btn--primary' },
+	          'Add Recipe'
+	        )
+	      )
+	    );
+	  }
+	});
 	
 	module.exports = RecipeAdd;
 
