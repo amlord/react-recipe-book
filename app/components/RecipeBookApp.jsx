@@ -8,22 +8,42 @@ var RecipeBookApp = React.createClass({
             recipes: [
                 {
                     id: 1,
-                    text: 'abc'
+                    name: 'Spaghetti Bolognese',
+                    ingredients: [
+                        'mince meat',
+                        'pasta',
+                        'tomato sauce'
+                    ]
                 },
                 {
                     id: 2,
-                    text: 'def'
+                    name: 'Toad in the Hole',
+                    ingredients: [
+                        'Sausages',
+                        'Milk',
+                        'Flour',
+                        'Egg',
+                        'Oil'
+                    ]
                 }
             ]
         };
     },
     render: function()
     {
+        var {recipes} = this.state;
+
+        var children = React.Children.map(this.props.children, function (child) {
+            return React.cloneElement(child, {
+                recipes: recipes
+            })
+        })
+
         return (
             <div>
                 <Navigation />
                 <div className="recipeBook__page">
-                    {this.props.children}
+                    {children}
                 </div>
             </div>
         );

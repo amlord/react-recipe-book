@@ -5,37 +5,25 @@ var Recipe = require('Recipe');
 // var recipeStore = new RecipeStore('_amlord_recipes');
 
 var RecipeList = React.createClass({
-  getInitialState: function()
-  { 
-    return {
-      //recipes: recipeStore.getFullList()
-      recipes: []
-    };
-  },
-  onClick: function(recipeId)
-  {
-    // return a function to manage table sort change
-    return () => {
-      this.props.onClick(recipeId);
-    };
-  },
-  render: function()
-  {
-    var {recipes} = this.state,
-        recipesBlock = [];
-    
-    for(var i = 0; i < recipes.length; i++)
+    renderRecipes: function()
     {
-      recipesBlock.push(<li onClick={this.onClick(i)}>{recipes[i].name}</li>);
+        var {recipes} = this.props;
+
+        return recipes.map((recipe) => {
+            return (
+                <Recipe key={recipe.id} {...recipe} />
+            );
+        });
+    },
+    render: function()
+    {
+        return (
+            <div className="recipeBook__list">
+                <h2>Recipe List</h2>
+                <ul>{this.renderRecipes()}</ul>
+            </div>
+        );
     }
-    
-    return (
-      <div className="recipeBook__list">
-        <h2>Recipe List</h2>
-        <ul>{recipesBlock}</ul>
-      </div>
-    );
-  }
 });
 
 module.exports = RecipeList;

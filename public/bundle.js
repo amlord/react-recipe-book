@@ -25497,14 +25497,25 @@
 	        return {
 	            recipes: [{
 	                id: 1,
-	                text: 'abc'
+	                name: 'Spaghetti Bolognese',
+	                ingredients: ['mince meat', 'pasta', 'tomato sauce']
 	            }, {
 	                id: 2,
-	                text: 'def'
+	                name: 'Toad in the Hole',
+	                ingredients: ['Sausages', 'Milk', 'Flour', 'Egg', 'Oil']
 	            }]
 	        };
 	    },
 	    render: function render() {
+	        var recipes = this.state.recipes;
+	
+	
+	        var children = React.Children.map(this.props.children, function (child) {
+	            return React.cloneElement(child, {
+	                recipes: recipes
+	            });
+	        });
+	
 	        return React.createElement(
 	            'div',
 	            null,
@@ -25512,7 +25523,7 @@
 	            React.createElement(
 	                'div',
 	                { className: 'recipeBook__page' },
-	                this.props.children
+	                children
 	            )
 	        );
 	    }
@@ -25598,6 +25609,8 @@
 
 	'use strict';
 	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
 	var React = __webpack_require__(8);
 	var Recipe = __webpack_require__(233);
 	
@@ -25605,50 +25618,32 @@
 	// var recipeStore = new RecipeStore('_amlord_recipes');
 	
 	var RecipeList = React.createClass({
-	  displayName: 'RecipeList',
+	    displayName: 'RecipeList',
 	
-	  getInitialState: function getInitialState() {
-	    return {
-	      //recipes: recipeStore.getFullList()
-	      recipes: []
-	    };
-	  },
-	  onClick: function onClick(recipeId) {
-	    var _this = this;
-	
-	    // return a function to manage table sort change
-	    return function () {
-	      _this.props.onClick(recipeId);
-	    };
-	  },
-	  render: function render() {
-	    var recipes = this.state.recipes,
-	        recipesBlock = [];
+	    renderRecipes: function renderRecipes() {
+	        var recipes = this.props.recipes;
 	
 	
-	    for (var i = 0; i < recipes.length; i++) {
-	      recipesBlock.push(React.createElement(
-	        'li',
-	        { onClick: this.onClick(i) },
-	        recipes[i].name
-	      ));
+	        return recipes.map(function (recipe) {
+	            return React.createElement(Recipe, _extends({ key: recipe.id }, recipe));
+	        });
+	    },
+	    render: function render() {
+	        return React.createElement(
+	            'div',
+	            { className: 'recipeBook__list' },
+	            React.createElement(
+	                'h2',
+	                null,
+	                'Recipe List'
+	            ),
+	            React.createElement(
+	                'ul',
+	                null,
+	                this.renderRecipes()
+	            )
+	        );
 	    }
-	
-	    return React.createElement(
-	      'div',
-	      { className: 'recipeBook__list' },
-	      React.createElement(
-	        'h2',
-	        null,
-	        'Recipe List'
-	      ),
-	      React.createElement(
-	        'ul',
-	        null,
-	        recipesBlock
-	      )
-	    );
-	  }
 	});
 	
 	module.exports = RecipeList;
@@ -25663,15 +25658,19 @@
 	
 	// Add Recipe
 	var Recipe = function Recipe(props) {
-	  return React.createElement(
-	    "div",
-	    { className: "recipeItem" },
-	    React.createElement(
-	      "h2",
-	      null,
-	      "Recipe"
-	    )
-	  );
+	    var name = props.name,
+	        ingredients = props.ingredients;
+	
+	
+	    return React.createElement(
+	        "li",
+	        { className: "recipeItem" },
+	        React.createElement(
+	            "h2",
+	            null,
+	            name
+	        )
+	    );
 	};
 	
 	module.exports = Recipe;
