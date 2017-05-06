@@ -25496,22 +25496,25 @@
 	    getInitialState: function getInitialState() {
 	        return {
 	            recipes: [{
-	                id: 0,
+	                id: this.uniqueId(),
 	                name: 'Spaghetti Bolognese',
 	                ingredients: ['mince meat', 'pasta', 'tomato sauce']
 	            }, {
-	                id: 1,
+	                id: this.uniqueId(),
 	                name: 'Toad in the Hole',
 	                ingredients: ['Sausages', 'Milk', 'Flour', 'Egg', 'Oil']
 	            }]
 	        };
+	    },
+	    uniqueId: function uniqueId() {
+	        return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 16);
 	    },
 	    handleRecipeAdd: function handleRecipeAdd(recipe) {
 	        var recipes = this.state.recipes;
 	
 	        // add an id to the added recipe
 	
-	        recipe.id = recipes.length;
+	        recipe.id = this.uniqueId();
 	
 	        // add recipe to the recipes array
 	        recipes.push(recipe);

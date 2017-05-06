@@ -7,7 +7,7 @@ var RecipeBookApp = React.createClass({
         return {
             recipes: [
                 {
-                    id: 0,
+                    id: this.uniqueId(),
                     name: 'Spaghetti Bolognese',
                     ingredients: [
                         'mince meat',
@@ -16,7 +16,7 @@ var RecipeBookApp = React.createClass({
                     ]
                 },
                 {
-                    id: 1,
+                    id: this.uniqueId(),
                     name: 'Toad in the Hole',
                     ingredients: [
                         'Sausages',
@@ -29,11 +29,14 @@ var RecipeBookApp = React.createClass({
             ]
         };
     },
+    uniqueId: function() {
+        return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 16);
+    },
     handleRecipeAdd: function(recipe){
         var {recipes} = this.state;
 
         // add an id to the added recipe
-        recipe.id = recipes.length;
+        recipe.id = this.uniqueId();
 
         // add recipe to the recipes array
         recipes.push(recipe);
