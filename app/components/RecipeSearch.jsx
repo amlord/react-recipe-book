@@ -21,8 +21,14 @@ var RecipeAddSearch = React.createClass({
         return (
             <div className="recipeBook__search">
               <form>
-                <label htmlFor="recipeSearch">Search:</label>
-                <input id="recipeSearch" value={this.state.searchText} onChange={this.handleSearch} />
+                <label htmlFor="recipeSearch" className="recipeBook__searchText">Search:</label>
+                <input
+                    id="recipeSearch"
+                    className="recipeBook__searchInput"
+                    placeholder="Recipe name, or ingredient"
+                    autoComplete="off"
+                    value={this.state.searchText}
+                    onChange={this.handleSearch} />
               </form>
             </div>
         );

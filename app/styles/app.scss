@@ -1,1 +1,163 @@
-// components
+// colours
+$colourMain: #08bdbd;
+
+// overrides
+a,
+.tab__link:hover {
+    color: $colourMain;
+}
+
+// recipe search
+.recipeBook__search {
+    background: $colourMain;
+    border-radius: 4px;
+    padding: 5px;
+    line-height: 1em;
+    font-size: 14px;
+    position: relative;
+}
+
+.recipeBook__searchText {
+    position: absolute;
+    left: 0;
+    top: 0;
+    line-height: 27px;
+    padding: 5px 12px;
+    color: #fff;
+
+    &::before {
+        content: '\f002';
+        font-family: FontAwesome;
+        display: inline-block;
+        margin-right: 6px;
+    }
+}
+
+.recipeBook__searchInput {
+    border: none;
+    border-radius: 2px;
+    padding: 5px;
+    width: 80%;
+    box-sizing: border-box;
+    margin-left: 20%;
+}
+
+// recipe list
+.recipeItems {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.recipeItem {
+    border-radius: 4px;
+    margin: 10px 0 0;
+    border: 2px solid #f2f2f2;
+    text-align: left;
+}
+
+.recipeItem__head {
+    padding: 5px;
+    position: relative;
+    cursor: pointer;
+
+    &::before {
+        content: '\f055';
+        font-family: FontAwesome;
+        position: absolute;
+        left: 0;
+        top: 0;
+        margin: 5px 10px;
+        color: #ccc;
+    }
+
+    &:hover {
+        color: $colourMain;
+
+        &::before {
+            color: $colourMain;
+        }
+    }
+}
+
+.recipeItem__head--open::before {
+    content: '\f056';
+}
+
+.recipeItem__title {
+    margin: 0;
+    font-size: 16px;
+    padding-left: 27px;
+}
+
+.recipeItem__body {
+    border-top: 1px dashed #ccc;
+    margin: 5px;
+    padding: 10px 5px 5px;
+    font-size: 14px;
+}
+
+.recipeItem__bodyTitle {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 0.5em;
+}
+
+.recipeItem__ingredients {
+    list-style-type: disc;
+    padding-left: 1.2em;
+}
+
+.recipeItem__foot {
+    padding: 5px 10px 10px;
+}
+
+.recipeItem__btn {
+    padding: 5px;
+    font-size: 12px;
+    background: transparent;
+    border: 1px solid #f2f2f2;
+
+    &::before {
+        font-family: FontAwesome;
+        display: inline-block;
+        margin-right: 6px;
+    }
+
+    &:hover {
+        color: $colourMain;
+        border-color: $colourMain;
+    }
+}
+
+.recipeItem__btn--edit {
+    margin-right: 15px;
+
+    &::before {
+        content: '\f040';
+    }
+}
+
+.recipeItem__btn--delete::before {
+    content: '\f014';
+}
+
+// recipe add
+.recipeBook__add {
+    text-align: left;
+
+    label {
+        display: block;
+        margin-bottom: 3px;
+    }
+
+    input,
+    textarea {
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        padding: 5px;
+        box-sizing: border-box;
+    }
+}

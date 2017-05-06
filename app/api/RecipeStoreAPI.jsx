@@ -9,6 +9,25 @@ module.exports = {
   {
     // save data array to local storage
     _saveToStorage(recipies);
+  },
+  filterRecipes: function(recipes, searchText){
+
+    var filteredRecipes = recipes.filter((recipe) => {
+      // check for (case-insensitive) match in the recipe name
+      if(recipe.name.toLowerCase().indexOf(searchText) !== -1){
+        return true;
+      }
+
+      // loop through the ingerdients for matches
+      for(var i = 0; i < recipe.ingredients.length; i++)
+      {
+        if(recipe.ingredients[i].toLowerCase().indexOf(searchText) !== -1){
+          return true;
+        }
+      }
+    });
+
+    return filteredRecipes;
   }
 };
 

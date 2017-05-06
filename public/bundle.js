@@ -25497,7 +25497,8 @@
 	
 	    getInitialState: function getInitialState() {
 	        return {
-	            recipes: RecipeStoreAPI.getRecipes()
+	            recipes: RecipeStoreAPI.getRecipes(),
+	            searchText: ''
 	        };
 	    },
 	    uniqueId: function uniqueId() {
@@ -25522,10 +25523,20 @@
 	            RecipeStoreAPI.saveRecipes(_this.state.recipes);
 	        });
 	    },
+	    handleSearch: function handleSearch(searchText) {
+	        this.setState({
+	            searchText: searchText
+	        });
+	    },
+	    handleRecipeDelete: function handleRecipeDelete(recipeId) {
+	        console.log('DELETE: ' + recipeId);
+	    },
 	    render: function render() {
 	        var _this2 = this;
 	
-	        var recipes = this.state.recipes;
+	        var _state = this.state,
+	            recipes = _state.recipes,
+	            searchText = _state.searchText;
 	
 	
 	        var children = React.Children.map(this.props.children, function (child) {
@@ -25537,8 +25548,12 @@
 	                });
 	            }
 	
+	            var filteredRecipes = RecipeStoreAPI.filterRecipes(recipes, searchText);
+	
 	            return React.cloneElement(child, {
-	                recipes: recipes
+	                recipes: filteredRecipes,
+	                onSearch: _this2.handleSearch,
+	                onRecipeDelete: _this2.handleRecipeDelete
 	            });
 	        });
 	
@@ -25674,11 +25689,6 @@
 	      'div',
 	      { className: 'recipeBook__add' },
 	      React.createElement(
-	        'h2',
-	        null,
-	        'Recipe Add'
-	      ),
-	      React.createElement(
 	        'form',
 	        { onSubmit: this.onSubmit },
 	        React.createElement(
@@ -25686,7 +25696,7 @@
 	          { htmlFor: 'recipeName' },
 	          'Recipe Name:'
 	        ),
-	        React.createElement('input', { id: 'recipeName', value: this.state.name, onChange: this.onNameChange }),
+	        React.createElement('input', { id: 'recipeName', value: this.state.name, autoComplete: 'off', onChange: this.onNameChange }),
 	        React.createElement(
 	          'label',
 	          { htmlFor: 'recipeIngredients' },
@@ -25723,37 +25733,37 @@
 	var Recipe = __webpack_require__(233);
 	var RecipeSearch = __webpack_require__(234);
 	
-	// var RecipeStore = require('RecipeStore');
-	// var recipeStore = new RecipeStore('_amlord_recipes');
-	
 	var RecipeList = React.createClass({
 	    displayName: 'RecipeList',
 	
 	    handleSearch: function handleSearch(searchText) {
-	        //this.props.onSearch(searchText);
-	        console.log(searchText);
+	        this.props.onSearch(searchText);
+	    },
+	    handleRecipeDelete: function handleRecipeDelete(recipeId) {
+	        this.props.onRecipeDelete(recipeId);
 	    },
 	    renderRecipes: function renderRecipes() {
+	        var _this = this;
+	
 	        var recipes = this.props.recipes;
 	
 	
 	        return recipes.map(function (recipe) {
-	            return React.createElement(Recipe, _extends({ key: recipe.id }, recipe));
+	            return React.createElement(Recipe, _extends({
+	                key: recipe.id,
+	                className: 'recipeItem'
+	            }, recipe, {
+	                onRecipeDelete: _this.handleRecipeDelete }));
 	        });
 	    },
 	    render: function render() {
 	        return React.createElement(
 	            'div',
 	            { className: 'recipeBook__list' },
-	            React.createElement(
-	                'h2',
-	                null,
-	                'Recipe List'
-	            ),
 	            React.createElement(RecipeSearch, { onSearch: this.handleSearch }),
 	            React.createElement(
 	                'ul',
-	                null,
+	                { className: 'recipeItems' },
 	                this.renderRecipes()
 	            )
 	        );
@@ -25766,26 +25776,99 @@
 /* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	var React = __webpack_require__(8);
 	
-	// Add Recipe
-	var Recipe = function Recipe(props) {
-	    var name = props.name,
-	        ingredients = props.ingredients;
+	var Recipe = React.createClass({
+	    displayName: 'Recipe',
+	
+	    getInitialState: function getInitialState() {
+	        return {
+	            open: false
+	        };
+	    },
+	    handleToggleClick: function handleToggleClick() {
+	        this.setState({
+	            open: !this.state.open
+	        });
+	    },
+	    handleEditClick: function handleEditClick() {
+	        console.log('edit: ' + this.props.id);
+	    },
+	    handleDeleteClick: function handleDeleteClick() {
+	        this.props.onRecipeDelete(this.props.id);
+	    },
+	
+	    renderIngredients: function renderIngredients(ingredients) {
+	        var ingredientList = [];
+	
+	        for (var i = 0; i < ingredients.length; i++) {
+	            ingredientList.push(React.createElement(
+	                'li',
+	                { key: i },
+	                ingredients[i]
+	            ));
+	        }
+	
+	        return ingredientList;
+	    },
+	    render: function render() {
+	        var _props = this.props,
+	            name = _props.name,
+	            ingredients = _props.ingredients,
+	            className = _props.className;
 	
 	
-	    return React.createElement(
-	        "li",
-	        { className: "recipeItem" },
-	        React.createElement(
-	            "h2",
-	            null,
-	            name
-	        )
-	    );
-	};
+	        return React.createElement(
+	            'li',
+	            { className: 'recipeItem' },
+	            React.createElement(
+	                'article',
+	                null,
+	                React.createElement(
+	                    'header',
+	                    {
+	                        className: "recipeItem__head" + (this.state.open ? " recipeItem__head--open" : ""),
+	                        onClick: this.handleToggleClick },
+	                    React.createElement(
+	                        'h1',
+	                        { className: 'recipeItem__title' },
+	                        name
+	                    )
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: "recipeItem__body" + (this.state.open ? "" : " hidden") },
+	                    React.createElement(
+	                        'h2',
+	                        { className: 'recipeItem__bodyTitle' },
+	                        'Ingredients'
+	                    ),
+	                    React.createElement(
+	                        'ul',
+	                        { className: 'recipeItem__ingredients' },
+	                        this.renderIngredients(ingredients)
+	                    )
+	                ),
+	                React.createElement(
+	                    'footer',
+	                    { className: "recipeItem__foot" + (this.state.open ? "" : " hidden") },
+	                    React.createElement(
+	                        'button',
+	                        { className: 'btn recipeItem__btn recipeItem__btn--edit', onClick: this.handleEditClick },
+	                        'Edit'
+	                    ),
+	                    React.createElement(
+	                        'button',
+	                        { className: 'btn recipeItem__btn recipeItem__btn--delete', onClick: this.handleDeleteClick },
+	                        'Delete'
+	                    )
+	                )
+	            )
+	        );
+	    }
+	});
 	
 	module.exports = Recipe;
 
@@ -25824,10 +25907,16 @@
 	                null,
 	                React.createElement(
 	                    'label',
-	                    { htmlFor: 'recipeSearch' },
+	                    { htmlFor: 'recipeSearch', className: 'recipeBook__searchText' },
 	                    'Search:'
 	                ),
-	                React.createElement('input', { id: 'recipeSearch', value: this.state.searchText, onChange: this.handleSearch })
+	                React.createElement('input', {
+	                    id: 'recipeSearch',
+	                    className: 'recipeBook__searchInput',
+	                    placeholder: 'Recipe name, or ingredient',
+	                    autoComplete: 'off',
+	                    value: this.state.searchText,
+	                    onChange: this.handleSearch })
 	            )
 	        );
 	    }
@@ -25870,7 +25959,7 @@
 	
 	
 	// module
-	exports.push([module.id, "", ""]);
+	exports.push([module.id, "a,\n.tab__link:hover {\n  color: #08bdbd; }\n\n.recipeBook__search {\n  background: #08bdbd;\n  border-radius: 4px;\n  padding: 5px;\n  line-height: 1em;\n  font-size: 14px;\n  position: relative; }\n\n.recipeBook__searchText {\n  position: absolute;\n  left: 0;\n  top: 0;\n  line-height: 27px;\n  padding: 5px 12px;\n  color: #fff; }\n  .recipeBook__searchText::before {\n    content: '\\F002';\n    font-family: FontAwesome;\n    display: inline-block;\n    margin-right: 6px; }\n\n.recipeBook__searchInput {\n  border: none;\n  border-radius: 2px;\n  padding: 5px;\n  width: 80%;\n  box-sizing: border-box;\n  margin-left: 20%; }\n\n.recipeItems {\n  list-style: none;\n  padding: 0;\n  margin: 0; }\n\n.recipeItem {\n  border-radius: 4px;\n  margin: 10px 0 0;\n  border: 2px solid #f2f2f2;\n  text-align: left; }\n\n.recipeItem__head {\n  padding: 5px;\n  position: relative;\n  cursor: pointer; }\n  .recipeItem__head::before {\n    content: '\\F055';\n    font-family: FontAwesome;\n    position: absolute;\n    left: 0;\n    top: 0;\n    margin: 5px 10px;\n    color: #ccc; }\n  .recipeItem__head:hover {\n    color: #08bdbd; }\n    .recipeItem__head:hover::before {\n      color: #08bdbd; }\n\n.recipeItem__head--open::before {\n  content: '\\F056'; }\n\n.recipeItem__title {\n  margin: 0;\n  font-size: 16px;\n  padding-left: 27px; }\n\n.recipeItem__body {\n  border-top: 1px dashed #ccc;\n  margin: 5px;\n  padding: 10px 5px 5px;\n  font-size: 14px; }\n\n.recipeItem__bodyTitle {\n  font-size: 14px;\n  font-weight: 700;\n  margin: 0 0 0.5em; }\n\n.recipeItem__ingredients {\n  list-style-type: disc;\n  padding-left: 1.2em; }\n\n.recipeItem__foot {\n  padding: 5px 10px 10px; }\n\n.recipeItem__btn {\n  padding: 5px;\n  font-size: 12px;\n  background: transparent;\n  border: 1px solid #f2f2f2; }\n  .recipeItem__btn::before {\n    font-family: FontAwesome;\n    display: inline-block;\n    margin-right: 6px; }\n  .recipeItem__btn:hover {\n    color: #08bdbd;\n    border-color: #08bdbd; }\n\n.recipeItem__btn--edit {\n  margin-right: 15px; }\n  .recipeItem__btn--edit::before {\n    content: '\\F040'; }\n\n.recipeItem__btn--delete::before {\n  content: '\\F014'; }\n\n.recipeBook__add {\n  text-align: left; }\n  .recipeBook__add label {\n    display: block;\n    margin-bottom: 3px; }\n  .recipeBook__add input,\n  .recipeBook__add textarea {\n    width: 100%;\n    border: 1px solid #ccc;\n    border-radius: 4px;\n    margin-bottom: 20px;\n    padding: 5px;\n    box-sizing: border-box; }\n", ""]);
 	
 	// exports
 
@@ -26198,6 +26287,24 @@
 	  saveRecipes: function saveRecipes(recipies) {
 	    // save data array to local storage
 	    _saveToStorage(recipies);
+	  },
+	  filterRecipes: function filterRecipes(recipes, searchText) {
+	
+	    var filteredRecipes = recipes.filter(function (recipe) {
+	      // check for (case-insensitive) match in the recipe name
+	      if (recipe.name.toLowerCase().indexOf(searchText) !== -1) {
+	        return true;
+	      }
+	
+	      // loop through the ingerdients for matches
+	      for (var i = 0; i < recipe.ingredients.length; i++) {
+	        if (recipe.ingredients[i].toLowerCase().indexOf(searchText) !== -1) {
+	          return true;
+	        }
+	      }
+	    });
+	
+	    return filteredRecipes;
 	  }
 	};
 	

@@ -58,10 +58,9 @@ var RecipeAddForm = React.createClass({
     {
         return (
             <div className="recipeBook__add">
-              <h2>Recipe Add</h2>
               <form onSubmit={this.onSubmit}>
                 <label htmlFor="recipeName">Recipe Name:</label>
-                <input id="recipeName" value={this.state.name} onChange={this.onNameChange} />
+                <input id="recipeName" value={this.state.name} autoComplete="off" onChange={this.onNameChange} />
 
                 <label htmlFor="recipeIngredients">Recipe Ingredients <small>(comma separated)</small>:</label>
                 <textarea id="recipeIngredients" value={this.state.ingredients.join(', ')} onChange={this.onIngredientsChange}></textarea>

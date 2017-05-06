@@ -7,13 +7,16 @@ var RecipeBookApp = React.createClass({
     getInitialState: function()
     {
         return {
-            recipes: RecipeStoreAPI.getRecipes()
+            recipes: RecipeStoreAPI.getRecipes(),
+            searchText: ''
         };
     },
-    uniqueId: function() {
+    uniqueId: function()
+    {
         return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 16);
     },
-    handleRecipeAdd: function(recipe){
+    handleRecipeAdd: function(recipe)
+    {
         var {recipes} = this.state;
 
         // add an id to the added recipe
@@ -29,9 +32,19 @@ var RecipeBookApp = React.createClass({
             RecipeStoreAPI.saveRecipes(this.state.recipes);
         });
     },
+    handleSearch: function(searchText)
+    {
+        this.setState({
+            searchText: searchText
+        });
+    },
+    handleRecipeDelete: function(recipeId)
+    {
+        console.log('DELETE: ' + recipeId);
+    },
     render: function()
     {
-        var {recipes} = this.state;
+        var {recipes, searchText} = this.state;
 
         var children = React.Children.map(this.props.children, (child) => {
  
@@ -44,8 +57,12 @@ var RecipeBookApp = React.createClass({
                 });
             }
 
+            var filteredRecipes = RecipeStoreAPI.filterRecipes(recipes, searchText);
+
             return React.cloneElement(child, {
-                recipes: recipes
+                recipes: filteredRecipes,
+                onSearch: this.handleSearch,
+                onRecipeDelete: this.handleRecipeDelete
             });
         });
 
