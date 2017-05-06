@@ -1,32 +1,13 @@
 var React = require('react');
 var Navigation = require('Navigation');
 
+var RecipeStoreAPI = require('RecipeStoreAPI');
+
 var RecipeBookApp = React.createClass({
     getInitialState: function()
     {
         return {
-            recipes: [
-                {
-                    id: this.uniqueId(),
-                    name: 'Spaghetti Bolognese',
-                    ingredients: [
-                        'mince meat',
-                        'pasta',
-                        'tomato sauce'
-                    ]
-                },
-                {
-                    id: this.uniqueId(),
-                    name: 'Toad in the Hole',
-                    ingredients: [
-                        'Sausages',
-                        'Milk',
-                        'Flour',
-                        'Egg',
-                        'Oil'
-                    ]
-                }
-            ]
+            recipes: RecipeStoreAPI.getRecipes()
         };
     },
     uniqueId: function() {
@@ -44,6 +25,8 @@ var RecipeBookApp = React.createClass({
         // update the state
         this.setState({
             recipes: recipes
+        },() => {
+            RecipeStoreAPI.saveRecipes(this.state.recipes);
         });
     },
     render: function()

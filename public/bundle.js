@@ -111,7 +111,7 @@
 	$(document).foundation();
 	
 	// load App css
-	__webpack_require__(234);
+	__webpack_require__(235);
 	
 	ReactDOM.render(React.createElement(
 	  Router,
@@ -25490,26 +25490,22 @@
 	var React = __webpack_require__(8);
 	var Navigation = __webpack_require__(230);
 	
+	var RecipeStoreAPI = __webpack_require__(239);
+	
 	var RecipeBookApp = React.createClass({
 	    displayName: 'RecipeBookApp',
 	
 	    getInitialState: function getInitialState() {
 	        return {
-	            recipes: [{
-	                id: this.uniqueId(),
-	                name: 'Spaghetti Bolognese',
-	                ingredients: ['mince meat', 'pasta', 'tomato sauce']
-	            }, {
-	                id: this.uniqueId(),
-	                name: 'Toad in the Hole',
-	                ingredients: ['Sausages', 'Milk', 'Flour', 'Egg', 'Oil']
-	            }]
+	            recipes: RecipeStoreAPI.getRecipes()
 	        };
 	    },
 	    uniqueId: function uniqueId() {
 	        return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 16);
 	    },
 	    handleRecipeAdd: function handleRecipeAdd(recipe) {
+	        var _this = this;
+	
 	        var recipes = this.state.recipes;
 	
 	        // add an id to the added recipe
@@ -25522,10 +25518,12 @@
 	        // update the state
 	        this.setState({
 	            recipes: recipes
+	        }, function () {
+	            RecipeStoreAPI.saveRecipes(_this.state.recipes);
 	        });
 	    },
 	    render: function render() {
-	        var _this = this;
+	        var _this2 = this;
 	
 	        var recipes = this.state.recipes;
 	
@@ -25535,7 +25533,7 @@
 	            // check if we're on the recipe 'add' compoent
 	            if (child.props.route.path !== undefined && child.props.route.path === 'add') {
 	                return React.cloneElement(child, {
-	                    handleRecipeAdd: _this.handleRecipeAdd
+	                    handleRecipeAdd: _this2.handleRecipeAdd
 	                });
 	            }
 	
@@ -25723,7 +25721,7 @@
 	
 	var React = __webpack_require__(8);
 	var Recipe = __webpack_require__(233);
-	var RecipeSearch = __webpack_require__(238);
+	var RecipeSearch = __webpack_require__(234);
 	
 	// var RecipeStore = require('RecipeStore');
 	// var recipeStore = new RecipeStore('_amlord_recipes');
@@ -25795,13 +25793,59 @@
 /* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	'use strict';
+	
+	var React = __webpack_require__(8);
+	
+	// Add Recipe
+	var RecipeAddSearch = React.createClass({
+	    displayName: 'RecipeAddSearch',
+	
+	    getInitialState: function getInitialState() {
+	        return {
+	            searchText: ''
+	        };
+	    },
+	    handleSearch: function handleSearch(e) {
+	        var _this = this;
+	
+	        this.setState({
+	            searchText: e.target.value.toLowerCase()
+	        }, function () {
+	            _this.props.onSearch(_this.state.searchText);
+	        });
+	    },
+	    render: function render() {
+	        return React.createElement(
+	            'div',
+	            { className: 'recipeBook__search' },
+	            React.createElement(
+	                'form',
+	                null,
+	                React.createElement(
+	                    'label',
+	                    { htmlFor: 'recipeSearch' },
+	                    'Search:'
+	                ),
+	                React.createElement('input', { id: 'recipeSearch', value: this.state.searchText, onChange: this.handleSearch })
+	            )
+	        );
+	    }
+	});
+	
+	module.exports = RecipeAddSearch;
+
+/***/ }),
+/* 235 */
+/***/ (function(module, exports, __webpack_require__) {
+
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(235);
+	var content = __webpack_require__(236);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(237)(content, {});
+	var update = __webpack_require__(238)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -25818,10 +25862,10 @@
 	}
 
 /***/ }),
-/* 235 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(236)();
+	exports = module.exports = __webpack_require__(237)();
 	// imports
 	
 	
@@ -25832,7 +25876,7 @@
 
 
 /***/ }),
-/* 236 */
+/* 237 */
 /***/ (function(module, exports) {
 
 	/*
@@ -25888,7 +25932,7 @@
 
 
 /***/ }),
-/* 237 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*
@@ -26140,50 +26184,58 @@
 
 
 /***/ }),
-/* 238 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 239 */
+/***/ (function(module, exports) {
 
 	'use strict';
 	
-	var React = __webpack_require__(8);
+	// ----- Storage -----------------------------
+	module.exports = {
+	  // public functions
+	  getRecipes: function getRecipes() {
+	    return _loadFromStorage();
+	  },
+	  saveRecipes: function saveRecipes(recipies) {
+	    // save data array to local storage
+	    _saveToStorage(recipies);
+	  }
+	};
 	
-	// Add Recipe
-	var RecipeAddSearch = React.createClass({
-	    displayName: 'RecipeAddSearch',
+	// private variables
+	var _key = '_amlord_recipes';
 	
-	    getInitialState: function getInitialState() {
-	        return {
-	            searchText: ''
-	        };
-	    },
-	    handleSearch: function handleSearch(e) {
-	        var _this = this;
+	// private functions
+	function _storageAvailable(type) {
+	  try {
+	    var storage = window[type],
+	        x = '__storage_test__';
+	    storage.setItem(x, x);
+	    storage.removeItem(x);
+	    return true;
+	  } catch (e) {
+	    return false;
+	  }
+	}
 	
-	        this.setState({
-	            searchText: e.target.value.toLowerCase()
-	        }, function () {
-	            _this.props.onSearch(_this.state.searchText);
-	        });
-	    },
-	    render: function render() {
-	        return React.createElement(
-	            'div',
-	            { className: 'recipeBook__search' },
-	            React.createElement(
-	                'form',
-	                null,
-	                React.createElement(
-	                    'label',
-	                    { htmlFor: 'recipeSearch' },
-	                    'Search:'
-	                ),
-	                React.createElement('input', { id: 'recipeSearch', value: this.state.searchText, onChange: this.handleSearch })
-	            )
-	        );
+	function _loadFromStorage() {
+	  if (_storageAvailable('localStorage')) {
+	    var data;
+	
+	    try {
+	      data = JSON.parse(localStorage.getItem(_key));
+	    } catch (e) {
+	      data = [];
 	    }
-	});
 	
-	module.exports = RecipeAddSearch;
+	    return Array.isArray(data) ? data : [];
+	  }
+	}
+	
+	function _saveToStorage(data) {
+	  if (_storageAvailable('localStorage') && Array.isArray(data)) {
+	    localStorage.setItem(_key, JSON.stringify(data));
+	  }
+	}
 
 /***/ })
 /******/ ]);
