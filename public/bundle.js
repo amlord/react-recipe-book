@@ -25720,6 +25720,7 @@
 	
 	var React = __webpack_require__(8);
 	var Recipe = __webpack_require__(233);
+	var RecipeSearch = __webpack_require__(238);
 	
 	// var RecipeStore = require('RecipeStore');
 	// var recipeStore = new RecipeStore('_amlord_recipes');
@@ -25727,6 +25728,10 @@
 	var RecipeList = React.createClass({
 	    displayName: 'RecipeList',
 	
+	    handleSearch: function handleSearch(searchText) {
+	        //this.props.onSearch(searchText);
+	        console.log(searchText);
+	    },
 	    renderRecipes: function renderRecipes() {
 	        var recipes = this.props.recipes;
 	
@@ -25744,6 +25749,7 @@
 	                null,
 	                'Recipe List'
 	            ),
+	            React.createElement(RecipeSearch, { onSearch: this.handleSearch }),
 	            React.createElement(
 	                'ul',
 	                null,
@@ -26129,6 +26135,52 @@
 			URL.revokeObjectURL(oldSrc);
 	}
 
+
+/***/ }),
+/* 238 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(8);
+	
+	// Add Recipe
+	var RecipeAddSearch = React.createClass({
+	    displayName: 'RecipeAddSearch',
+	
+	    getInitialState: function getInitialState() {
+	        return {
+	            searchText: ''
+	        };
+	    },
+	    handleSearch: function handleSearch(e) {
+	        var _this = this;
+	
+	        this.setState({
+	            searchText: e.target.value.toLowerCase()
+	        }, function () {
+	            _this.props.onSearch(_this.state.searchText);
+	        });
+	    },
+	    render: function render() {
+	        return React.createElement(
+	            'div',
+	            { className: 'recipeBook__search' },
+	            React.createElement(
+	                'form',
+	                null,
+	                React.createElement(
+	                    'label',
+	                    { htmlFor: 'recipeSearch' },
+	                    'Search:'
+	                ),
+	                React.createElement('input', { id: 'recipeSearch', value: this.state.searchText, onChange: this.handleSearch })
+	            )
+	        );
+	    }
+	});
+	
+	module.exports = RecipeAddSearch;
 
 /***/ })
 /******/ ]);
