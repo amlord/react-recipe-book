@@ -5,9 +5,6 @@ var RecipeBookApp = require('RecipeBookApp');
 var RecipeForm = require('RecipeForm');
 var RecipeList = require('RecipeList');
 
-// load Foundation
-$(document).foundation();
-
 // load App css
 require('style!css!sass!applicationStyles');
 

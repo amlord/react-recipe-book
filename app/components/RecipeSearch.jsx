@@ -1,7 +1,7 @@
 var React = require('react');
 
 // Add Recipe
-var RecipeAddSearch = React.createClass({
+var RecipeSearch = React.createClass({
     getInitialState: function()
     {
         return {
@@ -35,4 +35,4 @@ var RecipeAddSearch = React.createClass({
     }
 });
 
-module.exports = RecipeAddSearch;
+module.exports = RecipeSearch;

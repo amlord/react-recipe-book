@@ -92,7 +92,7 @@
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function($) {'use strict';
+	'use strict';
 	
 	var React = __webpack_require__(8);
 	var ReactDOM = __webpack_require__(165);
@@ -107,9 +107,6 @@
 	var RecipeForm = __webpack_require__(240);
 	var RecipeList = __webpack_require__(232);
 	
-	// load Foundation
-	$(document).foundation();
-	
 	// load App css
 	__webpack_require__(235);
 	
@@ -123,15 +120,9 @@
 	    React.createElement(IndexRoute, { component: RecipeList })
 	  )
 	), document.getElementById('app'));
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports) {
-
-	module.exports = jQuery;
-
-/***/ }),
+/* 7 */,
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -25862,8 +25853,8 @@
 	var React = __webpack_require__(8);
 	
 	// Add Recipe
-	var RecipeAddSearch = React.createClass({
-	    displayName: 'RecipeAddSearch',
+	var RecipeSearch = React.createClass({
+	    displayName: 'RecipeSearch',
 	
 	    getInitialState: function getInitialState() {
 	        return {
@@ -25903,7 +25894,7 @@
 	    }
 	});
 	
-	module.exports = RecipeAddSearch;
+	module.exports = RecipeSearch;
 
 /***/ }),
 /* 235 */
