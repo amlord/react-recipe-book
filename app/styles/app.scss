@@ -1,5 +1,8 @@
 // colours
 $colourMain: #08bdbd;
+$colourSecondary: #29bf12;
+$colourDanger: #f21b3f;
+$colourTertiary: #ff7700;
 
 // overrides
 a,
@@ -109,7 +112,7 @@ a,
 }
 
 .recipeItem__foot {
-    padding: 5px 10px 10px;
+    padding: 0 10px 10px;
 }
 
 .recipeItem__btn {
@@ -130,16 +133,24 @@ a,
     }
 }
 
-.recipeItem__btn--edit {
+.recipeItem__btn--edit,
+.recipeItem__btn--done {
     margin-right: 15px;
+}
 
-    &::before {
-        content: '\f040';
-    }
+.recipeItem__btn--edit::before {
+    content: '\f040';
+    color: $colourTertiary;
+}
+
+.recipeItem__btn--done::before {
+    content: '\f00c';
+    color: $colourSecondary;
 }
 
 .recipeItem__btn--delete::before {
     content: '\f014';
+    color: $colourDanger;
 }
 
 // recipe add

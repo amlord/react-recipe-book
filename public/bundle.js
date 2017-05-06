@@ -104,7 +104,7 @@
 	    hashHistory = _require.hashHistory;
 	
 	var RecipeBookApp = __webpack_require__(229);
-	var RecipeAddForm = __webpack_require__(231);
+	var RecipeForm = __webpack_require__(240);
 	var RecipeList = __webpack_require__(232);
 	
 	// load Foundation
@@ -119,7 +119,7 @@
 	  React.createElement(
 	    Route,
 	    { path: '/', component: RecipeBookApp },
-	    React.createElement(Route, { path: 'add', component: RecipeAddForm }),
+	    React.createElement(Route, { path: 'add', component: RecipeForm }),
 	    React.createElement(IndexRoute, { component: RecipeList })
 	  )
 	), document.getElementById('app'));
@@ -25529,10 +25529,47 @@
 	        });
 	    },
 	    handleRecipeDelete: function handleRecipeDelete(recipeId) {
-	        console.log('DELETE: ' + recipeId);
+	        var _this2 = this;
+	
+	        var recipes = this.state.recipes;
+	
+	        // filter out the deleted recipe
+	
+	        recipes = recipes.filter(function (recipe) {
+	            return recipe.id === recipeId ? false : true;
+	        });
+	
+	        // update the state
+	        this.setState({
+	            recipes: recipes
+	        }, function () {
+	            RecipeStoreAPI.saveRecipes(_this2.state.recipes);
+	        });
+	    },
+	    handleRecipeUpdate: function handleRecipeUpdate(updatedRecipe) {
+	        var _this3 = this;
+	
+	        var recipes = this.state.recipes;
+	
+	        // replace the updated recipe with new
+	
+	        recipes = recipes.map(function (recipe) {
+	            if (recipe.id === updatedRecipe.id) {
+	                return updatedRecipe;
+	            }
+	
+	            return recipe;
+	        });
+	
+	        // update the state
+	        this.setState({
+	            recipes: recipes
+	        }, function () {
+	            RecipeStoreAPI.saveRecipes(_this3.state.recipes);
+	        });
 	    },
 	    render: function render() {
-	        var _this2 = this;
+	        var _this4 = this;
 	
 	        var _state = this.state,
 	            recipes = _state.recipes,
@@ -25544,7 +25581,7 @@
 	            // check if we're on the recipe 'add' compoent
 	            if (child.props.route.path !== undefined && child.props.route.path === 'add') {
 	                return React.cloneElement(child, {
-	                    handleRecipeAdd: _this2.handleRecipeAdd
+	                    handleRecipeAdd: _this4.handleRecipeAdd
 	                });
 	            }
 	
@@ -25552,8 +25589,9 @@
 	
 	            return React.cloneElement(child, {
 	                recipes: filteredRecipes,
-	                onSearch: _this2.handleSearch,
-	                onRecipeDelete: _this2.handleRecipeDelete
+	                onSearch: _this4.handleSearch,
+	                onRecipeDelete: _this4.handleRecipeDelete,
+	                onRecipeUpdate: _this4.handleRecipeUpdate
 	            });
 	        });
 	
@@ -25622,106 +25660,7 @@
 	module.exports = Navigation;
 
 /***/ }),
-/* 231 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var React = __webpack_require__(8);
-	
-	var _require = __webpack_require__(166),
-	    hashHistory = _require.hashHistory;
-	
-	// Add Recipe
-	
-	
-	var RecipeAddForm = React.createClass({
-	  displayName: 'RecipeAddForm',
-	
-	  getInitialState: function getInitialState() {
-	    return {
-	      name: '',
-	      ingredients: []
-	    };
-	  },
-	  onNameChange: function onNameChange(e) {
-	    this.setState({
-	      name: e.target.value
-	    });
-	  },
-	  onIngredientsChange: function onIngredientsChange(e) {
-	    // split comma-separated string into array
-	    var ingredients = e.target.value.split(',');
-	
-	    // remove leading spaces from array elements
-	    ingredients = ingredients.map(function (ingredient) {
-	      return ingredient.trimLeft();
-	    });
-	
-	    // update the state
-	    this.setState({
-	      ingredients: ingredients
-	    });
-	  },
-	  onSubmit: function onSubmit(e) {
-	    e.preventDefault();
-	
-	    // check we have a recipe to save
-	    if (this.state.name !== '' && this.state.ingredients.length > 0) {
-	      // call the parent's 'recipe add' handler
-	      this.props.handleRecipeAdd({
-	        name: this.state.name,
-	        ingredients: this.state.ingredients
-	      });
-	
-	      // empty the state
-	      this.setState({
-	        name: '',
-	        ingredients: []
-	      }, function () {
-	        // route to the recipe list tab
-	        hashHistory.push('/');
-	      });
-	    }
-	  },
-	  render: function render() {
-	    return React.createElement(
-	      'div',
-	      { className: 'recipeBook__add' },
-	      React.createElement(
-	        'form',
-	        { onSubmit: this.onSubmit },
-	        React.createElement(
-	          'label',
-	          { htmlFor: 'recipeName' },
-	          'Recipe Name:'
-	        ),
-	        React.createElement('input', { id: 'recipeName', value: this.state.name, autoComplete: 'off', onChange: this.onNameChange }),
-	        React.createElement(
-	          'label',
-	          { htmlFor: 'recipeIngredients' },
-	          'Recipe Ingredients ',
-	          React.createElement(
-	            'small',
-	            null,
-	            '(comma separated)'
-	          ),
-	          ':'
-	        ),
-	        React.createElement('textarea', { id: 'recipeIngredients', value: this.state.ingredients.join(', '), onChange: this.onIngredientsChange }),
-	        React.createElement(
-	          'button',
-	          { className: 'btn btn--primary' },
-	          'Add Recipe'
-	        )
-	      )
-	    );
-	  }
-	});
-	
-	module.exports = RecipeAddForm;
-
-/***/ }),
+/* 231 */,
 /* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -25742,6 +25681,9 @@
 	    handleRecipeDelete: function handleRecipeDelete(recipeId) {
 	        this.props.onRecipeDelete(recipeId);
 	    },
+	    handleRecipeUpdate: function handleRecipeUpdate(recipe) {
+	        this.props.onRecipeUpdate(recipe);
+	    },
 	    renderRecipes: function renderRecipes() {
 	        var _this = this;
 	
@@ -25753,7 +25695,8 @@
 	                key: recipe.id,
 	                className: 'recipeItem'
 	            }, recipe, {
-	                onRecipeDelete: _this.handleRecipeDelete }));
+	                onRecipeDelete: _this.handleRecipeDelete,
+	                onRecipeUpdate: _this.handleRecipeUpdate }));
 	        });
 	    },
 	    render: function render() {
@@ -25779,13 +25722,15 @@
 	'use strict';
 	
 	var React = __webpack_require__(8);
+	var RecipeForm = __webpack_require__(240);
 	
 	var Recipe = React.createClass({
 	    displayName: 'Recipe',
 	
 	    getInitialState: function getInitialState() {
 	        return {
-	            open: false
+	            open: false,
+	            edit: false
 	        };
 	    },
 	    handleToggleClick: function handleToggleClick() {
@@ -25794,10 +25739,20 @@
 	        });
 	    },
 	    handleEditClick: function handleEditClick() {
-	        console.log('edit: ' + this.props.id);
+	        this.setState({
+	            edit: true
+	        });
+	    },
+	    handleDoneClick: function handleDoneClick() {
+	        this.setState({
+	            edit: false
+	        });
 	    },
 	    handleDeleteClick: function handleDeleteClick() {
 	        this.props.onRecipeDelete(this.props.id);
+	    },
+	    handleRecipeUpdate: function handleRecipeUpdate(recipe) {
+	        this.props.onRecipeUpdate(recipe);
 	    },
 	
 	    renderIngredients: function renderIngredients(ingredients) {
@@ -25815,6 +25770,7 @@
 	    },
 	    render: function render() {
 	        var _props = this.props,
+	            id = _props.id,
 	            name = _props.name,
 	            ingredients = _props.ingredients,
 	            className = _props.className;
@@ -25841,14 +25797,28 @@
 	                    'div',
 	                    { className: "recipeItem__body" + (this.state.open ? "" : " hidden") },
 	                    React.createElement(
-	                        'h2',
-	                        { className: 'recipeItem__bodyTitle' },
-	                        'Ingredients'
+	                        'div',
+	                        { className: !this.state.edit ? "" : " hidden" },
+	                        React.createElement(
+	                            'h2',
+	                            { className: 'recipeItem__bodyTitle' },
+	                            'Ingredients'
+	                        ),
+	                        React.createElement(
+	                            'ul',
+	                            { className: 'recipeItem__ingredients' },
+	                            this.renderIngredients(ingredients)
+	                        )
 	                    ),
 	                    React.createElement(
-	                        'ul',
-	                        { className: 'recipeItem__ingredients' },
-	                        this.renderIngredients(ingredients)
+	                        'div',
+	                        { className: this.state.edit ? "" : " hidden" },
+	                        React.createElement(RecipeForm, {
+	                            id: this.props.id,
+	                            name: name,
+	                            ingredients: ingredients,
+	                            edit: true,
+	                            onRecipeUpdate: this.handleRecipeUpdate })
 	                    )
 	                ),
 	                React.createElement(
@@ -25856,12 +25826,23 @@
 	                    { className: "recipeItem__foot" + (this.state.open ? "" : " hidden") },
 	                    React.createElement(
 	                        'button',
-	                        { className: 'btn recipeItem__btn recipeItem__btn--edit', onClick: this.handleEditClick },
+	                        {
+	                            className: "btn recipeItem__btn recipeItem__btn--done" + (!this.state.edit ? " hidden" : ""),
+	                            onClick: this.handleDoneClick },
+	                        'Done'
+	                    ),
+	                    React.createElement(
+	                        'button',
+	                        {
+	                            className: "btn recipeItem__btn recipeItem__btn--edit" + (this.state.edit ? " hidden" : ""),
+	                            onClick: this.handleEditClick },
 	                        'Edit'
 	                    ),
 	                    React.createElement(
 	                        'button',
-	                        { className: 'btn recipeItem__btn recipeItem__btn--delete', onClick: this.handleDeleteClick },
+	                        {
+	                            className: 'btn recipeItem__btn recipeItem__btn--delete',
+	                            onClick: this.handleDeleteClick },
 	                        'Delete'
 	                    )
 	                )
@@ -25959,7 +25940,7 @@
 	
 	
 	// module
-	exports.push([module.id, "a,\n.tab__link:hover {\n  color: #08bdbd; }\n\n.recipeBook__search {\n  background: #08bdbd;\n  border-radius: 4px;\n  padding: 5px;\n  line-height: 1em;\n  font-size: 14px;\n  position: relative; }\n\n.recipeBook__searchText {\n  position: absolute;\n  left: 0;\n  top: 0;\n  line-height: 27px;\n  padding: 5px 12px;\n  color: #fff; }\n  .recipeBook__searchText::before {\n    content: '\\F002';\n    font-family: FontAwesome;\n    display: inline-block;\n    margin-right: 6px; }\n\n.recipeBook__searchInput {\n  border: none;\n  border-radius: 2px;\n  padding: 5px;\n  width: 80%;\n  box-sizing: border-box;\n  margin-left: 20%; }\n\n.recipeItems {\n  list-style: none;\n  padding: 0;\n  margin: 0; }\n\n.recipeItem {\n  border-radius: 4px;\n  margin: 10px 0 0;\n  border: 2px solid #f2f2f2;\n  text-align: left; }\n\n.recipeItem__head {\n  padding: 5px;\n  position: relative;\n  cursor: pointer; }\n  .recipeItem__head::before {\n    content: '\\F055';\n    font-family: FontAwesome;\n    position: absolute;\n    left: 0;\n    top: 0;\n    margin: 5px 10px;\n    color: #ccc; }\n  .recipeItem__head:hover {\n    color: #08bdbd; }\n    .recipeItem__head:hover::before {\n      color: #08bdbd; }\n\n.recipeItem__head--open::before {\n  content: '\\F056'; }\n\n.recipeItem__title {\n  margin: 0;\n  font-size: 16px;\n  padding-left: 27px; }\n\n.recipeItem__body {\n  border-top: 1px dashed #ccc;\n  margin: 5px;\n  padding: 10px 5px 5px;\n  font-size: 14px; }\n\n.recipeItem__bodyTitle {\n  font-size: 14px;\n  font-weight: 700;\n  margin: 0 0 0.5em; }\n\n.recipeItem__ingredients {\n  list-style-type: disc;\n  padding-left: 1.2em; }\n\n.recipeItem__foot {\n  padding: 5px 10px 10px; }\n\n.recipeItem__btn {\n  padding: 5px;\n  font-size: 12px;\n  background: transparent;\n  border: 1px solid #f2f2f2; }\n  .recipeItem__btn::before {\n    font-family: FontAwesome;\n    display: inline-block;\n    margin-right: 6px; }\n  .recipeItem__btn:hover {\n    color: #08bdbd;\n    border-color: #08bdbd; }\n\n.recipeItem__btn--edit {\n  margin-right: 15px; }\n  .recipeItem__btn--edit::before {\n    content: '\\F040'; }\n\n.recipeItem__btn--delete::before {\n  content: '\\F014'; }\n\n.recipeBook__add {\n  text-align: left; }\n  .recipeBook__add label {\n    display: block;\n    margin-bottom: 3px; }\n  .recipeBook__add input,\n  .recipeBook__add textarea {\n    width: 100%;\n    border: 1px solid #ccc;\n    border-radius: 4px;\n    margin-bottom: 20px;\n    padding: 5px;\n    box-sizing: border-box; }\n", ""]);
+	exports.push([module.id, "a,\n.tab__link:hover {\n  color: #08bdbd; }\n\n.recipeBook__search {\n  background: #08bdbd;\n  border-radius: 4px;\n  padding: 5px;\n  line-height: 1em;\n  font-size: 14px;\n  position: relative; }\n\n.recipeBook__searchText {\n  position: absolute;\n  left: 0;\n  top: 0;\n  line-height: 27px;\n  padding: 5px 12px;\n  color: #fff; }\n  .recipeBook__searchText::before {\n    content: '\\F002';\n    font-family: FontAwesome;\n    display: inline-block;\n    margin-right: 6px; }\n\n.recipeBook__searchInput {\n  border: none;\n  border-radius: 2px;\n  padding: 5px;\n  width: 80%;\n  box-sizing: border-box;\n  margin-left: 20%; }\n\n.recipeItems {\n  list-style: none;\n  padding: 0;\n  margin: 0; }\n\n.recipeItem {\n  border-radius: 4px;\n  margin: 10px 0 0;\n  border: 2px solid #f2f2f2;\n  text-align: left; }\n\n.recipeItem__head {\n  padding: 5px;\n  position: relative;\n  cursor: pointer; }\n  .recipeItem__head::before {\n    content: '\\F055';\n    font-family: FontAwesome;\n    position: absolute;\n    left: 0;\n    top: 0;\n    margin: 5px 10px;\n    color: #ccc; }\n  .recipeItem__head:hover {\n    color: #08bdbd; }\n    .recipeItem__head:hover::before {\n      color: #08bdbd; }\n\n.recipeItem__head--open::before {\n  content: '\\F056'; }\n\n.recipeItem__title {\n  margin: 0;\n  font-size: 16px;\n  padding-left: 27px; }\n\n.recipeItem__body {\n  border-top: 1px dashed #ccc;\n  margin: 5px;\n  padding: 10px 5px 5px;\n  font-size: 14px; }\n\n.recipeItem__bodyTitle {\n  font-size: 14px;\n  font-weight: 700;\n  margin: 0 0 0.5em; }\n\n.recipeItem__ingredients {\n  list-style-type: disc;\n  padding-left: 1.2em; }\n\n.recipeItem__foot {\n  padding: 0 10px 10px; }\n\n.recipeItem__btn {\n  padding: 5px;\n  font-size: 12px;\n  background: transparent;\n  border: 1px solid #f2f2f2; }\n  .recipeItem__btn::before {\n    font-family: FontAwesome;\n    display: inline-block;\n    margin-right: 6px; }\n  .recipeItem__btn:hover {\n    color: #08bdbd;\n    border-color: #08bdbd; }\n\n.recipeItem__btn--edit,\n.recipeItem__btn--done {\n  margin-right: 15px; }\n\n.recipeItem__btn--edit::before {\n  content: '\\F040';\n  color: #ff7700; }\n\n.recipeItem__btn--done::before {\n  content: '\\F00C';\n  color: #29bf12; }\n\n.recipeItem__btn--delete::before {\n  content: '\\F014';\n  color: #f21b3f; }\n\n.recipeBook__add {\n  text-align: left; }\n  .recipeBook__add label {\n    display: block;\n    margin-bottom: 3px; }\n  .recipeBook__add input,\n  .recipeBook__add textarea {\n    width: 100%;\n    border: 1px solid #ccc;\n    border-radius: 4px;\n    margin-bottom: 20px;\n    padding: 5px;\n    box-sizing: border-box; }\n", ""]);
 	
 	// exports
 
@@ -26343,6 +26324,129 @@
 	    localStorage.setItem(_key, JSON.stringify(data));
 	  }
 	}
+
+/***/ }),
+/* 240 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(8);
+	
+	var _require = __webpack_require__(166),
+	    hashHistory = _require.hashHistory;
+	
+	// Add Recipe
+	
+	
+	var RecipeForm = React.createClass({
+	  displayName: 'RecipeForm',
+	
+	  getInitialState: function getInitialState() {
+	    var _props = this.props,
+	        name = _props.name,
+	        ingredients = _props.ingredients;
+	
+	
+	    return {
+	      name: name ? name : '',
+	      ingredients: ingredients ? ingredients : []
+	    };
+	  },
+	  onNameChange: function onNameChange(e) {
+	    var _this = this;
+	
+	    this.setState({
+	      name: e.target.value
+	    }, function () {
+	      _this.handleRecipeUpdate();
+	    });
+	  },
+	  onIngredientsChange: function onIngredientsChange(e) {
+	    var _this2 = this;
+	
+	    // split comma-separated string into array
+	    var ingredients = e.target.value.split(',');
+	
+	    // remove leading spaces from array elements
+	    ingredients = ingredients.map(function (ingredient) {
+	      return ingredient.trimLeft();
+	    });
+	
+	    // update the state
+	    this.setState({
+	      ingredients: ingredients
+	    }, function () {
+	      _this2.handleRecipeUpdate();
+	    });
+	  },
+	  onSubmit: function onSubmit(e) {
+	    e.preventDefault();
+	
+	    // check we have a recipe to save
+	    if (this.state.name !== '' && this.state.ingredients.length > 0) {
+	      // call the parent's 'recipe add' handler
+	      this.props.handleRecipeAdd({
+	        name: this.state.name,
+	        ingredients: this.state.ingredients
+	      });
+	
+	      // empty the state
+	      this.setState({
+	        name: '',
+	        ingredients: []
+	      }, function () {
+	        // route to the recipe list tab
+	        hashHistory.push('/');
+	      });
+	    }
+	  },
+	  handleRecipeUpdate: function handleRecipeUpdate() {
+	    if (this.props.edit && this.props.id) {
+	      this.props.onRecipeUpdate({
+	        id: this.props.id,
+	        name: this.state.name,
+	        ingredients: this.state.ingredients
+	      });
+	    }
+	  },
+	
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { className: 'recipeBook__add' },
+	      React.createElement(
+	        'form',
+	        { onSubmit: this.onSubmit },
+	        React.createElement(
+	          'label',
+	          { htmlFor: 'recipeName' },
+	          'Recipe Name:'
+	        ),
+	        React.createElement('input', { id: 'recipeName', value: this.state.name, autoComplete: 'off', onChange: this.onNameChange }),
+	        React.createElement(
+	          'label',
+	          { htmlFor: 'recipeIngredients' },
+	          'Recipe Ingredients ',
+	          React.createElement(
+	            'small',
+	            null,
+	            '(comma separated)'
+	          ),
+	          ':'
+	        ),
+	        React.createElement('textarea', { id: 'recipeIngredients', value: this.state.ingredients.join(', '), onChange: this.onIngredientsChange }),
+	        React.createElement(
+	          'button',
+	          { className: "btn btn--primary" + (this.props.edit ? " hidden" : "") },
+	          'Add Recipe'
+	        )
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = RecipeForm;
 
 /***/ })
 /******/ ]);

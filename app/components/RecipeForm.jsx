@@ -2,18 +2,22 @@ var React = require('react');
 var { hashHistory } = require('react-router');
 
 // Add Recipe
-var RecipeAddForm = React.createClass({
+var RecipeForm = React.createClass({
     getInitialState: function()
     {
+        var {name, ingredients} = this.props;
+
         return {
-          name: '',
-          ingredients: []
+          name: name ? name : '',
+          ingredients: ingredients ? ingredients : []
         };
     },
     onNameChange: function(e)
     {
         this.setState({
           name: e.target.value
+        },() => {
+          this.handleRecipeUpdate();
         });
     },
     onIngredientsChange: function(e)
@@ -29,6 +33,8 @@ var RecipeAddForm = React.createClass({
         // update the state
         this.setState({
           ingredients: ingredients
+        },() => {
+          this.handleRecipeUpdate();
         });
     },
     onSubmit: function(e)
@@ -54,6 +60,17 @@ var RecipeAddForm = React.createClass({
         });
       }
     },
+    handleRecipeUpdate()
+    {
+      if(this.props.edit && this.props.id)
+      {
+        this.props.onRecipeUpdate({
+          id: this.props.id,
+          name: this.state.name,
+          ingredients: this.state.ingredients
+        });
+      }
+    },
     render: function()
     {
         return (
@@ -65,11 +82,11 @@ var RecipeAddForm = React.createClass({
                 <label htmlFor="recipeIngredients">Recipe Ingredients <small>(comma separated)</small>:</label>
                 <textarea id="recipeIngredients" value={this.state.ingredients.join(', ')} onChange={this.onIngredientsChange}></textarea>
 
-                <button className="btn btn--primary">Add Recipe</button>
+                <button className={"btn btn--primary" + (this.props.edit ? " hidden" : "")}>Add Recipe</button>
               </form>
             </div>
         );
     }
 });
 
-module.exports = RecipeAddForm;
+module.exports = RecipeForm;

@@ -9,6 +9,9 @@ var RecipeList = React.createClass({
     handleRecipeDelete: function(recipeId){
         this.props.onRecipeDelete(recipeId);
     },
+    handleRecipeUpdate: function(recipe){
+        this.props.onRecipeUpdate(recipe);
+    },
     renderRecipes: function()
     {
         var {recipes} = this.props;
@@ -19,7 +22,8 @@ var RecipeList = React.createClass({
                     key={recipe.id}
                     className="recipeItem"
                     {...recipe}
-                    onRecipeDelete={this.handleRecipeDelete} />
+                    onRecipeDelete={this.handleRecipeDelete}
+                    onRecipeUpdate={this.handleRecipeUpdate} />
             );
         });
     },

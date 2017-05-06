@@ -40,7 +40,40 @@ var RecipeBookApp = React.createClass({
     },
     handleRecipeDelete: function(recipeId)
     {
-        console.log('DELETE: ' + recipeId);
+        var {recipes} = this.state;
+
+        // filter out the deleted recipe
+        recipes = recipes.filter((recipe) => {
+            return recipe.id === recipeId ? false : true;
+        });
+
+        // update the state
+        this.setState({
+            recipes: recipes
+        },() => {
+            RecipeStoreAPI.saveRecipes(this.state.recipes);
+        });
+    },
+    handleRecipeUpdate: function(updatedRecipe)
+    {
+        var {recipes} = this.state;
+
+        // replace the updated recipe with new
+        recipes = recipes.map((recipe) => {
+            if(recipe.id === updatedRecipe.id)
+            {
+                return updatedRecipe;
+            }
+
+            return recipe;
+        });
+
+        // update the state
+        this.setState({
+            recipes: recipes
+        },() => {
+            RecipeStoreAPI.saveRecipes(this.state.recipes);
+        });
     },
     render: function()
     {
@@ -62,7 +95,8 @@ var RecipeBookApp = React.createClass({
             return React.cloneElement(child, {
                 recipes: filteredRecipes,
                 onSearch: this.handleSearch,
-                onRecipeDelete: this.handleRecipeDelete
+                onRecipeDelete: this.handleRecipeDelete,
+                onRecipeUpdate: this.handleRecipeUpdate
             });
         });
 
