@@ -2,7 +2,7 @@ var React = require('react');
 var { hashHistory } = require('react-router');
 
 // Add Recipe
-var RecipeAdd = React.createClass({
+var RecipeAddForm = React.createClass({
     getInitialState: function()
     {
         return {
@@ -39,7 +39,10 @@ var RecipeAdd = React.createClass({
       if(this.state.name !== '' && this.state.ingredients.length > 0)
       {
         // call the parent's 'recipe add' handler
-        this.props.handleRecipeAdd(this.state);
+        this.props.handleRecipeAdd({
+          name: this.state.name,
+          ingredients: this.state.ingredients
+        });
 
         // empty the state
         this.setState({
@@ -70,4 +73,4 @@ var RecipeAdd = React.createClass({
     }
 });
 
-module.exports = RecipeAdd;
+module.exports = RecipeAddForm;

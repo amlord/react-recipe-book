@@ -104,7 +104,7 @@
 	    hashHistory = _require.hashHistory;
 	
 	var RecipeBookApp = __webpack_require__(229);
-	var RecipeAdd = __webpack_require__(231);
+	var RecipeAddForm = __webpack_require__(231);
 	var RecipeList = __webpack_require__(232);
 	
 	// load Foundation
@@ -119,7 +119,7 @@
 	  React.createElement(
 	    Route,
 	    { path: '/', component: RecipeBookApp },
-	    React.createElement(Route, { path: 'add', component: RecipeAdd }),
+	    React.createElement(Route, { path: 'add', component: RecipeAddForm }),
 	    React.createElement(IndexRoute, { component: RecipeList })
 	  )
 	), document.getElementById('app'));
@@ -25619,8 +25619,8 @@
 	// Add Recipe
 	
 	
-	var RecipeAdd = React.createClass({
-	  displayName: 'RecipeAdd',
+	var RecipeAddForm = React.createClass({
+	  displayName: 'RecipeAddForm',
 	
 	  getInitialState: function getInitialState() {
 	    return {
@@ -25653,7 +25653,10 @@
 	    // check we have a recipe to save
 	    if (this.state.name !== '' && this.state.ingredients.length > 0) {
 	      // call the parent's 'recipe add' handler
-	      this.props.handleRecipeAdd(this.state);
+	      this.props.handleRecipeAdd({
+	        name: this.state.name,
+	        ingredients: this.state.ingredients
+	      });
 	
 	      // empty the state
 	      this.setState({
@@ -25705,7 +25708,7 @@
 	  }
 	});
 	
-	module.exports = RecipeAdd;
+	module.exports = RecipeAddForm;
 
 /***/ }),
 /* 232 */
